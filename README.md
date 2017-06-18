@@ -3,7 +3,7 @@
 #### What it is:
 
 
-This is a game (work in progress) that aims to resemble (Binding Of Isaac)[http://bindingofisaac.com/]. However, the game will be online and multiplayer (and probably mobile).
+This is a game (work in progress) that aims to resemble (Binding Of Isaac)[http://bindingofisaac.com]. However, the game will be online and multiplayer (and probably mobile).
 
 
 #### Why though?
