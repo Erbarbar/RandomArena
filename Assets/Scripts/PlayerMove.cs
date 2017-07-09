@@ -23,13 +23,13 @@ public class PlayerMove : NetworkBehaviour {
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	void FixedUpdate () {/*
         // only local player can use this script
         if(!isLocalPlayer)
-            return;
+            return;*/
 
         // so that running diagonally doesnt increase overall speed
-        normalizeMovement(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        normalizeMovement(Input.GetAxisRaw("Horizontal Move"), Input.GetAxisRaw("Vertical Move"));
 
         // adds movement to the player Rigidbody2D
         rb2d.AddForce(new Vector2(speedX,speedY), ForceMode2D.Impulse);
