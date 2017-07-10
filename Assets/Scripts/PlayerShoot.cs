@@ -10,15 +10,12 @@ public class PlayerShoot : NetworkBehaviour {
     public int tearDistance;
     public int tearRate;
 
+    [SyncVar]
     public float tearTimer;
-    public int direction;
 
     public float inputMargin;
     public GameObject tear;
 
-    void Start(){
-        direction = 6;
-    }
 	
     void FixedUpdate(){
         if(tearTimer > 0)
@@ -26,27 +23,39 @@ public class PlayerShoot : NetworkBehaviour {
     }
 
 	// Update is called once per frame
-	void Update () {/*
+	void Update () {
 		if(!isLocalPlayer)
             return;
-*/
 
-        direction = getDirection(Input.GetAxisRaw("Horizontal Shoot"),Input.GetAxisRaw("Vertical Shoot"));
+
+        int direction = getDirection(Input.GetAxisRaw("Horizontal Shoot"),Input.GetAxisRaw("Vertical Shoot"));
 
         if(direction != 5 && tearTimer <= 0){
-            Vector2 tearPosition = this.transform.position;
-            GameObject spawnedTear = Instantiate(tear, tearPosition, Quaternion.identity);
-
-            Rigidbody2D tearBody = spawnedTear.GetComponent("Rigidbody2D") as Rigidbody2D;
-            Rigidbody2D playerBody = GetComponent("Rigidbody2D") as Rigidbody2D;
-
-            Vector2 tearVector = getVector(direction);
-            tearVector *= tearSpeed;
-            tearVector += addPlayerVelocity(direction, playerBody.velocity);
-            tearBody.velocity = tearVector;
-            tearTimer = (float)1.0f/tearRate;
+            CmdShoot(direction);
         }
 	}
+
+    [Command]
+    void CmdShoot(int direction){
+        if(tearTimer>0 || !isServer)
+            return;
+        Vector2 tearPosition = this.transform.position;
+        GameObject spawnedTear = Instantiate(tear, tearPosition, Quaternion.identity);
+
+        Rigidbody2D tearBody = spawnedTear.GetComponent("Rigidbody2D") as Rigidbody2D;
+        Rigidbody2D playerBody = GetComponent("Rigidbody2D") as Rigidbody2D;
+
+        Vector2 tearVector = getVector(direction);
+        tearVector *= tearSpeed;
+        tearVector += addPlayerVelocity(direction, playerBody.velocity);
+        tearBody.velocity = tearVector;
+        tearTimer = (float)1.0f/tearRate;
+
+        spawnedTear.SendMessage("setDamage",tearDamage);
+
+        Destroy(spawnedTear,tearDistance);
+        NetworkServer.Spawn(spawnedTear);
+    }
 
     int getDirection(float x, float y){
         if(x>inputMargin)
